@@ -214,9 +214,9 @@ class XEP_0045(BasePlugin):
             if entry is not None and entry['jid'].full == jid:
                 return nick
 
-    def configure_room(self, room, form=None, ifrom=None):
+    async def configure_room(self, room, form=None, ifrom=None):
         if form is None:
-            form = self.get_room_config(room, ifrom=ifrom)
+            form = await self.get_room_config(room, ifrom=ifrom)
         iq = self.xmpp.make_iq_set()
         iq['to'] = room
         if ifrom is not None:
@@ -227,7 +227,7 @@ class XEP_0045(BasePlugin):
         iq.append(query)
         # For now, swallow errors to preserve existing API
         try:
-            result = iq.send()
+            await iq.send()
         except IqError:
             return False
         except IqTimeout:
@@ -346,13 +346,13 @@ class XEP_0045(BasePlugin):
             self.xmpp.send_presence(pshow='unavailable', pto="%s/%s" % (room, nick), pfrom=pfrom)
         del self.rooms[room]
 
-    def get_room_config(self, room, ifrom=''):
+    async def get_room_config(self, room, ifrom=''):
         iq = self.xmpp.make_iq_get('http://jabber.org/protocol/muc#owner')
         iq['to'] = room
         iq['from'] = ifrom
         # For now, swallow errors to preserve existing API
         try:
-            result = iq.send()
+            result = await iq.send()
         except IqError:
             raise ValueError
         except IqTimeout:
