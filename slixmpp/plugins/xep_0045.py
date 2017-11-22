@@ -371,14 +371,14 @@ class XEP_0045(BasePlugin):
         iq['from'] = ifrom
         iq.send()
 
-    def set_room_config(self, room, config, ifrom=''):
+    async def set_room_config(self, room, config, ifrom=''):
         query = ET.Element('{http://jabber.org/protocol/muc#owner}query')
         config['type'] = 'submit'
         query.append(config)
         iq = self.xmpp.make_iq_set(query)
         iq['to'] = room
         iq['from'] = ifrom
-        iq.send()
+        await iq.send()
 
     def get_joined_rooms(self):
         return self.rooms.keys()
